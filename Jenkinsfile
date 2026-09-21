@@ -17,12 +17,20 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                    withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            set +x
-                            /var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarScanner/bin/sonar-scanner -Dsonar.token="$SONAR_TOKEN"
-                        '''
+                script {
+                    def scannerHome = tool 'SonarScanner'
+
+                    withSonarQubeEnv(
+                        installationName: 'SonarQube',
+                        credentialsId: 'sonarqube-token'
+                    ) {
+                        withEnv(["SCANNER_HOME=${scannerHome}"]) {
+                            sh '''
+                                set +x
+                                "$SCANNER_HOME/bin/sonar-scanner" \
+                                  -Dsonar.token="$SONAR_AUTH_TOKEN"
+                            '''
+                        }
                     }
                 }
             }
