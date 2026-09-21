@@ -40,5 +40,15 @@ pipeline {
         sh 'docker build -t student-task-manager:latest .'
     }
 }
+        stage('Test AWS Connection') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-ecr-credentials']
+                ]) {
+                    sh 'aws sts get-caller-identity'
+                }
+            }
+        }
     }
 }
