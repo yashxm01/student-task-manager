@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "sonar": "sonar-scanner"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,8 @@
   },
   "devDependencies": {
     "jest": "^30.5.2",
+    "sonar-scanner": "^3.1.0",
+    "sonarqube-scanner": "^5.0.0",
     "supertest": "^7.2.2"
   }
 }
