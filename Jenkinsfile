@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Build Docker Image') {
     steps {
-        sh 'docker build -t student-task-manager:latest .'
+       sh 'docker build --platform linux/amd64 -t student-task-manager:latest .'
     }
 }
         stage('Push Docker Image to ECR') {
