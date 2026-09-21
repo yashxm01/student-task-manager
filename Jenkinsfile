@@ -22,7 +22,7 @@ pipeline {
 
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                         withSonarQubeEnv('SonarQube') {
-                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.token=$SONAR_TOKEN"
+                           sh "${scannerHome}/bin/sonar-scanner -Dsonar.token=\$SONAR_TOKEN"
                         }
                     }
                 }
