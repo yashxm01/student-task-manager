@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent any
 
@@ -18,9 +19,11 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner'
+                    def scannerHome = tool 'SonarScanner'
+                    sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
         }
     }
 }
+```
