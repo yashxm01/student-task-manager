@@ -40,15 +40,25 @@ pipeline {
         sh 'docker build -t student-task-manager:latest .'
     }
 }
-        stage('Test AWS Connection') {
-            steps {
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding',
-                     credentialsId: 'aws-ecr-credentials']
-                ]) {
-                    sh 'aws sts get-caller-identity'
-                }
-            }
+        stage('Push Docker Image to ECR') {
+    steps {
+        withCredentials([
+            [$class: 'AmazonWebServicesCredentialsBinding',
+             credentialsId: 'aws-ecr-credentials']
+        ]) {
+            sh '''
+                aws ecr get-login-password --region ap-south-1 | \
+                docker login --username AWS --password-stdin \
+                825475389480.dkr.ecr.ap-south-1.amazonaws.com
+
+                docker tag student-task-manager:latest \
+                825475389480.dkr.ecr.ap-south-1.amazonaws.com/student-task-manager:latest
+
+                docker push \
+                825475389480.dkr.ecr.ap-south-1.amazonaws.com/student-task-manager:latest
+            '''
         }
+    }
+}
     }
 }
