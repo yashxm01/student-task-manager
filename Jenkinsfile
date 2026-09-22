@@ -35,6 +35,11 @@ pipeline {
                 }
             }
         }
+        stage('Security Audit') {
+    steps {
+        sh 'npm audit --audit-level=high || true'
+    }
+}
         stage('Build Docker Image') {
     steps {
 sh 'docker buildx build --platform linux/amd64 --provenance=false --sbom=false --load -t student-task-manager:latest .'  }
