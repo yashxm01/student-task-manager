@@ -64,21 +64,38 @@ sh 'docker buildx build --platform linux/amd64 --provenance=false --sbom=false -
         }
     }
 }
-               stage('Test EC2 SSH Connection') {
+        
+        stage('Deploy to EC2 Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'ec2-ssh-key-file', variable: 'EC2_SSH_KEY')]) {
                     sh '''
                         chmod 600 "$EC2_SSH_KEY"
+
                         ssh -i "$EC2_SSH_KEY" \
                             -o IdentitiesOnly=yes \
                             -o BatchMode=yes \
                             -o ConnectTimeout=10 \
                             -o StrictHostKeyChecking=accept-new \
-                            ubuntu@3.110.136.125 \
-                            'echo SSH_CONNECTION_OK'
+                            ubuntu@3.110.136.125 '
+                                set -e
+
+                                ECR_PASSWORD=$(aws ecr get-login-password --region ap-south-1)
+
+                                sudo k3s kubectl create secret docker-registry ecr-secret \
+                                    --docker-server=825475389480.dkr.ecr.ap-south-1.amazonaws.com \
+                                    --docker-username=AWS \
+                                    --docker-password="$ECR_PASSWORD" \
+                                    --dry-run=client -o yaml | sudo k3s kubectl apply -f -
+
+                                sudo k3s kubectl set image deployment/student-task-manager \
+                                    student-task-manager=825475389480.dkr.ecr.ap-south-1.amazonaws.com/student-task-manager:latest
+
+                                sudo k3s kubectl rollout status deployment/student-task-manager --timeout=180s
+                            '
                     '''
                 }
             }
         }
+
     }
 }
