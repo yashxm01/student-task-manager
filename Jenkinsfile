@@ -66,7 +66,7 @@ sh 'docker buildx build --platform linux/amd64 --provenance=false --sbom=false -
 }
         stage('Test EC2 SSH Connection') {
             steps {
-                sshagent(credentials: ['ec2-ssh-key']) {
+                sshagent(credentials: ['ec2-ssh-key-new']) {
                     sh '''
                         ssh -o BatchMode=yes \
                             -o ConnectTimeout=10 \
