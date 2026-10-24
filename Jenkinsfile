@@ -64,5 +64,18 @@ sh 'docker buildx build --platform linux/amd64 --provenance=false --sbom=false -
         }
     }
 }
+        stage('Test EC2 SSH Connection') {
+            steps {
+                sshagent(credentials: ['ec2-ssh-key']) {
+                    sh '''
+                        ssh -o BatchMode=yes \
+                            -o ConnectTimeout=10 \
+                            -o StrictHostKeyChecking=accept-new \
+                            ubuntu@3.110.136.125 \
+                            'echo SSH_CONNECTION_OK'
+                    '''
+                }
+            }
+        }
     }
 }
